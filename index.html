@@ -1,0 +1,1044 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Produksi CC dan CK - Branch Palembang Tahun 2024</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/3.9.1/chart.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background-color: #f9fafb;
+            color: #111827;
+            line-height: 1.6;
+        }
+
+        .container {
+            max-width: 1280px;
+            margin: 0 auto;
+            padding: 24px;
+        }
+
+        .header {
+            margin-bottom: 24px;
+        }
+
+        .header h1 {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #111827;
+            margin-bottom: 16px;
+        }
+
+        .tabs {
+            display: flex;
+            gap: 12px;
+            margin-bottom: 24px;
+            flex-wrap: wrap;
+        }
+
+        .tab-button {
+            padding: 10px 16px;
+            border: none;
+            border-radius: 8px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s;
+            background: white;
+            color: #374151;
+            border: 1px solid #d1d5db;
+            font-size: 0.875rem;
+        }
+
+        .tab-button:hover {
+            background: #f3f4f6;
+        }
+
+        .tab-button.active {
+            background: #2563eb;
+            color: white;
+            border-color: #2563eb;
+        }
+
+        .card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            margin-bottom: 24px;
+        }
+
+        .card-header {
+            padding: 24px 24px 16px;
+        }
+
+        .card-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #111827;
+        }
+
+        .card-content {
+            padding: 0 24px 24px;
+        }
+
+        .grid {
+            display: grid;
+            gap: 24px;
+        }
+
+        .grid-cols-4 {
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+        }
+
+        .grid-cols-1 {
+            grid-template-columns: 1fr;
+        }
+
+        .summary-card {
+            background: white;
+            border-radius: 8px;
+            box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+            border: 1px solid #e5e7eb;
+            padding: 20px;
+        }
+
+        .summary-card .label {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: #6b7280;
+            margin-bottom: 8px;
+        }
+
+        .summary-card .value {
+            font-size: 1.875rem;
+            font-weight: bold;
+            margin-bottom: 4px;
+        }
+
+        .summary-card .subtitle {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .blue { color: #2563eb; }
+        .green { color: #16a34a; }
+        .orange { color: #ea580c; }
+        .purple { color: #9333ea; }
+        .red { color: #dc2626; }
+        .teal { color: #0d9488; }
+        .indigo { color: #4f46e5; }
+        .pink { color: #db2777; }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .kade-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .kade-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 12px;
+            background: #f9fafb;
+            border-radius: 8px;
+        }
+
+        .kade-item .rank {
+            width: 32px;
+            height: 32px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: bold;
+            font-size: 0.875rem;
+            margin-right: 12px;
+        }
+
+        .rank.gold { background: #eab308; }
+        .rank.silver { background: #9ca3af; }
+        .rank.bronze { background: #ea580c; }
+        .rank.blue { background: #3b82f6; }
+
+        .kade-info h4 {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .kade-info p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .kade-total {
+            text-align: right;
+        }
+
+        .kade-total .value {
+            font-size: 1.125rem;
+            font-weight: bold;
+            color: #2563eb;
+        }
+
+        .kade-total .unit {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .table-container {
+            overflow-x: auto;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+        }
+
+        th {
+            background: #f9fafb;
+            padding: 12px;
+            text-align: left;
+            font-size: 0.75rem;
+            font-weight: 500;
+            color: #6b7280;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            border-bottom: 1px solid #e5e7eb;
+        }
+
+        td {
+            padding: 16px 12px;
+            border-bottom: 1px solid #e5e7eb;
+            font-size: 0.875rem;
+        }
+
+        tr:hover {
+            background: #f9fafb;
+        }
+
+        .font-medium {
+            font-weight: 500;
+        }
+
+        .bor-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px;
+            background: #f9fafb;
+            border-radius: 8px;
+            margin-bottom: 12px;
+            border-left: 4px solid;
+        }
+
+        .bor-item.excellent { border-left-color: #16a34a; }
+        .bor-item.good { border-left-color: #2563eb; }
+        .bor-item.fair { border-left-color: #ea580c; }
+        .bor-item.poor { border-left-color: #dc2626; }
+
+        .bor-info h4 {
+            font-weight: 600;
+            color: #111827;
+            margin-bottom: 4px;
+        }
+
+        .bor-info p {
+            font-size: 0.875rem;
+            color: #6b7280;
+        }
+
+        .bor-value {
+            text-align: right;
+        }
+
+        .bor-value .percentage {
+            font-size: 1.5rem;
+            font-weight: bold;
+            margin-bottom: 2px;
+        }
+
+        .bor-value .unit {
+            font-size: 0.75rem;
+            color: #6b7280;
+        }
+
+        .status-indicator {
+            display: inline-block;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 0.75rem;
+            font-weight: 500;
+            margin-top: 4px;
+        }
+
+        .status-excellent { background: #dcfce7; color: #166534; }
+        .status-good { background: #dbeafe; color: #1e40af; }
+        .status-fair { background: #fed7aa; color: #c2410c; }
+        .status-poor { background: #fecaca; color: #b91c1c; }
+
+        @media (max-width: 768px) {
+            .container {
+                padding: 16px;
+            }
+
+            .header h1 {
+                font-size: 1.5rem;
+            }
+
+            .tabs {
+                gap: 8px;
+            }
+
+            .tab-button {
+                font-size: 0.75rem;
+                padding: 8px 12px;
+            }
+
+            .grid-cols-4 {
+                grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            }
+
+            .grid-cols-1 {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-card .value {
+                font-size: 1.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .grid-cols-4 {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Produksi Curah Cair dan Curah Kering - Branch Palembang Tahun 2024</h1>
+        </div>
+
+        <div class="tabs">
+            <button class="tab-button active" onclick="showTab('overview')">Overview</button>
+            <button class="tab-button" onclick="showTab('kade')">Data per KADE</button>
+            <button class="tab-button" onclick="showTab('bor')">BOR Dermaga</button>
+            <button class="tab-button" onclick="showTab('call-kapal')">Data Call Kapal</button>
+        </div>
+
+        <!-- Overview Tab -->
+        <div id="overview" class="tab-content active">
+            <div class="grid grid-cols-4" id="summary-cards">
+                <!-- Summary cards will be populated by JavaScript -->
+            </div>
+
+            <div class="grid grid-cols-1">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top 5 KADE Terbaik</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="kade-list" id="top-kade">
+                            <!-- Top KADE list will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KADE Tab -->
+        <div id="kade" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Detail Produksi per KADE</h3>
+                </div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table id="kade-table">
+                            <thead>
+                                <tr>
+                                    <th>KADE</th>
+                                    <th>CC Domestik</th>
+                                    <th>CC Luar Negeri</th>
+                                    <th>CK Domestik</th>
+                                    <th>CK Luar Negeri</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- BOR Tab -->
+        <div id="bor" class="tab-content">
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Rata-rata BOR per Dermaga</h3>
+                </div>
+                <div class="card-content">
+                    <div id="bor-summary">
+                        <!-- BOR summary will be populated by JavaScript -->
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Detail BOR per Dermaga dan Bulan</h3>
+                </div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table id="bor-table">
+                            <thead>
+                                <tr>
+                                    <th>Dermaga</th>
+                                    <th>Jan</th>
+                                    <th>Feb</th>
+                                    <th>Mar</th>
+                                    <th>Apr</th>
+                                    <th>Mei</th>
+                                    <th>Jun</th>
+                                    <th>Jul</th>
+                                    <th>Agu</th>
+                                    <th>Sep</th>
+                                    <th>Okt</th>
+                                    <th>Nov</th>
+                                    <th>Des</th>
+                                    <th>Rata-rata</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- BOR table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Call Kapal Tab -->
+        <div id="call-kapal" class="tab-content">
+            <div class="grid grid-cols-4" id="call-summary-cards">
+                <!-- Call summary cards will be populated by JavaScript -->
+            </div>
+
+            <div class="grid grid-cols-1">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Top 5 KADE dengan Call Kapal Terbanyak</h3>
+                    </div>
+                    <div class="card-content">
+                        <div class="kade-list" id="top-call-kade">
+                            <!-- Top call KADE list will be populated by JavaScript -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="card">
+                <div class="card-header">
+                    <h3 class="card-title">Detail Call Kapal per KADE</h3>
+                </div>
+                <div class="card-content">
+                    <div class="table-container">
+                        <table id="call-table">
+                            <thead>
+                                <tr>
+                                    <th>KADE</th>
+                                    <th>BAG</th>
+                                    <th>BC</th>
+                                    <th>CC</th>
+                                    <th>CK</th>
+                                    <th>GC</th>
+                                    <th>GC + BC</th>
+                                    <th>Total</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <!-- Call table rows will be populated by JavaScript -->
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Raw production data
+        const rawData = `BULAN;KADE;JENIS;TON_DN;TON_LN
+JANUARI;B;CC;15912;0
+JANUARI;DE;CC;5001;0
+JANUARI;DE;CK;0;19593
+JANUARI;EX. PT. PN VII;CC;22760;0
+JANUARI;H;CC;11259;0
+JANUARI;I;CC;14914;1516
+JANUARI;I;CK;0;4990
+JANUARI;LONSUM;CC;8003;0
+JANUARI;MSS;CC;650;0
+JANUARI;TPK 1;CC;2805;0
+JANUARI;TRIMITRA;CC;1084;0
+FEBRUARI;B;CC;12146;3022
+FEBRUARI;DE;CC;3301;0
+FEBRUARI;DE;CK;4002;6955
+FEBRUARI;EX PT. PN VII;CC;19052;0
+FEBRUARI;H;CC;21327;0
+FEBRUARI;I;CC;1044;0
+FEBRUARI;LONSUM;CC;3501;0
+FEBRUARI;MSS;CC;900;0
+FEBRUARI;TRIMITRA;CC;925;0
+MARET;B;CC;9051;0
+MARET;DE;CC;1001;0
+MARET;DE;CK;0;10366
+MARET;EX PT. PN VII;CC;28960;0
+MARET;H;CC;19002;0
+MARET;I;CC;8253;4648
+MARET;LONSUM;CC;9503;0
+MARET;TRIMITRA;CC;1999;0
+APRIL;B;CC;4998;0
+APRIL;DE;CC;2501;3020
+APRIL;DE;CK;3367;0
+APRIL;EX PT. PN VII;CC;15897;0
+APRIL;H;CC;32232;0
+APRIL;I;CK;0;3300
+APRIL;LONSUM;CC;3502;0
+APRIL;TRIMITRA;CC;2797;0
+MEI;B;CC;9250;0
+MEI;DE;CK;6403;6000
+MEI;EX. PT. PN VII;CC;15214;0
+MEI;H;CC;23466;0
+MEI;I;CC;6706;0
+MEI;LONSUM;CC;3500;0
+MEI;TRIMITRA;CC;2672;0
+JUNI;B;CC;6053;4908
+JUNI;DE;CK;4500;19950
+JUNI;EX PT. PN VII;CC;23013;0
+JUNI;H;CC;22329;0
+JUNI;I;CC;0;998
+JUNI;I;CK;0;3850
+JUNI;LONSUM;CC;9606;0
+JUNI;TRIMITRA;CC;3248;0
+JULI;B;CC;8002;2926
+JULI;DE;CK;0;24201
+JULI;EX. PT. PN VII;CC;15605;0
+JULI;H;CC;25266;0
+JULI;H;CK;0;3821
+JULI;LONSUM;CC;10001;0
+AGUSTUS;B;CC;3500;0
+AGUSTUS;DE;CC;1051;0
+AGUSTUS;DE;CK;0;20180
+AGUSTUS;EX. PT. PN VII;CC;5900;0
+AGUSTUS;H;CC;27304;2000
+AGUSTUS;LONSUM;CC;10505;0
+AGUSTUS;TERMINAL SEI. LAIS;CC;994;0
+AGUSTUS;TPK I;CC;2206;0
+SEPTEMBER;B;CC;8502;4975
+SEPTEMBER;B;CK;0;3300
+SEPTEMBER;DE;CK;0;9111
+SEPTEMBER;EX. PT. PN VII;CC;20967;0
+SEPTEMBER;H;CC;21668;1500
+SEPTEMBER;LONSUM;CC;3501;0
+SEPTEMBER;SEI. LAIS;CC;2636;0
+SEPTEMBER;TERMINAL SEI. LAIS;CC;1291;0
+OKTOBER;B;CC;5052;0
+OKTOBER;DE;CK;0;9910
+OKTOBER;EX. PT, PN VII;CC;14121;0
+OKTOBER;H;CC;49086;0
+OKTOBER;I;CC;1110;0
+OKTOBER;LONSUM;CC;10304;0
+OKTOBER;TERMINAL SEI. LAIS;CC;3206;0
+OKTOBER;TPK I;CC;2202;0
+NOVEMBER;B;CC;17405;2978
+NOVEMBER;B;CK;0;4950
+NOVEMBER;DE;CC;1051;0
+NOVEMBER;DE;CK;0;22596
+NOVEMBER;EX. PT, PN VII;CC;36537;0
+NOVEMBER;H;CC;9654;0
+NOVEMBER;I;CC;37942;5188
+NOVEMBER;I;CK;0;4000
+NOVEMBER;LONSUM;CC;16005;0
+NOVEMBER;TERMINAL SEI. LAIS;CC;5918;0
+DESEMBER;B;CC;4501;5706
+DESEMBER;DE;CK;0;14830
+DESEMBER;EX. PT. PN VII;CC;23991;0
+DESEMBER;H;CC;44379;3250
+DESEMBER;I;CK;0;4359
+DESEMBER;LONSUM;CC;9001;0
+DESEMBER;TERMINAL SEI. LAIS;CC;4047;0`;
+
+        // BOR data
+        const borData = {
+            'Dermaga BE': [72.54, 60.35, 35.92, 43.17, 44.26, 65.71, 31.52, 58.60, 53.54, 23.49, 28.60, 34.61],
+            'Dermaga H': [34.58, 19.44, 9.84, 59.55, 9.75, 17.88, 52.69, 23.49, 89.25, 81.59, 21.93, 40.05],
+            'Dermaga I': [56.79, 3.85, 22.19, 14.68, 18.79, 46.92, 11.50, 0.00, 0.00, 0.36, 40.70, 45.13],
+            'Jetty': [14.57, 13.87, 30.64, 15.89, 9.09, 42.27, 3.45, 87.39, 30.15, 16.62, 31.51, 21.84]
+        };
+
+        // Call Kapal data from CSV
+        const callKapalRawData = `KADE;BAG;BC;CC;CK;GC;GC + BC;Grand Total
+A;;2;;;2;;4
+B;;13;36;2;70;1;122
+DE;;8;7;41;30;;86
+EX PT. PN VII;;;27;;;;27
+EX. PT, PN VII;;;19;;;;19
+EX. PT. PN VII;;;35;;;;35
+H;;7;97;1;8;;113
+I;;23;26;5;1;;55
+LAIS;1;4;;;;;5
+LONSUM;;;26;;;;26
+MSS;;;3;;;;3
+SEI. LAIS;;;1;;;;1
+TERMINAL SEI. LAIS;;1;6;;;;7
+TPK 1;;;1;;;;1
+TPK 2;;;;;1;;1
+TPK I;;;2;;;;2
+TPK II;;;;;3;;3
+TRIMITRA;;;6;;;;6
+Grand Total;1;58;292;49;115;1;516`;
+
+        // Global variables
+        let processedData = [];
+        let kadeData = [];
+        let summary = {};
+        let borSummary = {};
+        let callKapalData = [];
+        let callSummary = {};
+
+        // Process production data
+        function processData() {
+            const lines = rawData.trim().split('\n').slice(1);
+            processedData = [];
+
+            lines.forEach(line => {
+                if (line.trim() && !line.includes(';;;')) {
+                    const [bulan, kade, jenis, ton_dn, ton_ln] = line.split(';');
+                    processedData.push({
+                        bulan,
+                        kade: kade.trim(),
+                        jenis,
+                        ton_dn: parseInt(ton_dn) || 0,
+                        ton_ln: parseInt(ton_ln) || 0,
+                        total: (parseInt(ton_dn) || 0) + (parseInt(ton_ln) || 0)
+                    });
+                }
+            });
+
+            calculateKadeData();
+            calculateSummary();
+            calculateBORSummary();
+            processCallKapalData();
+        }
+
+        function calculateKadeData() {
+            const kadeMap = {};
+
+            processedData.forEach(d => {
+                if (!kadeMap[d.kade]) {
+                    kadeMap[d.kade] = {
+                        kade: d.kade,
+                        cc_total: 0,
+                        ck_total: 0,
+                        cc_dn: 0,
+                        cc_ln: 0,
+                        ck_dn: 0,
+                        ck_ln: 0
+                    };
+                }
+
+                if (d.jenis === 'CC') {
+                    kadeMap[d.kade].cc_total += d.total;
+                    kadeMap[d.kade].cc_dn += d.ton_dn;
+                    kadeMap[d.kade].cc_ln += d.ton_ln;
+                } else {
+                    kadeMap[d.kade].ck_total += d.total;
+                    kadeMap[d.kade].ck_dn += d.ton_dn;
+                    kadeMap[d.kade].ck_ln += d.ton_ln;
+                }
+            });
+
+            kadeData = Object.values(kadeMap).sort((a, b) => 
+                (b.cc_total + b.ck_total) - (a.cc_total + a.ck_total)
+            );
+        }
+
+        function calculateSummary() {
+            const totalCC = processedData.filter(d => d.jenis === 'CC').reduce((sum, d) => sum + d.total, 0);
+            const totalCK = processedData.filter(d => d.jenis === 'CK').reduce((sum, d) => sum + d.total, 0);
+            const totalDN = processedData.reduce((sum, d) => sum + d.ton_dn, 0);
+            const totalLN = processedData.reduce((sum, d) => sum + d.ton_ln, 0);
+
+            summary = {
+                totalCC,
+                totalCK,
+                totalDN,
+                totalLN,
+                totalProduksi: totalCC + totalCK,
+                percentageCC: ((totalCC / (totalCC + totalCK)) * 100).toFixed(1),
+                percentageCK: ((totalCK / (totalCC + totalCK)) * 100).toFixed(1),
+                percentageDN: ((totalDN / (totalDN + totalLN)) * 100).toFixed(1),
+                percentageLN: ((totalLN / (totalDN + totalLN)) * 100).toFixed(1)
+            };
+        }
+
+        function calculateBORSummary() {
+            borSummary = {};
+            Object.keys(borData).forEach(dermaga => {
+                const values = borData[dermaga];
+                const average = values.reduce((sum, val) => sum + val, 0) / values.length;
+                borSummary[dermaga] = {
+                    average: average.toFixed(2),
+                    max: Math.max(...values).toFixed(2),
+                    min: Math.min(...values).toFixed(2),
+                    status: getStatus(average)
+                };
+            });
+        }
+
+        function processCallKapalData() {
+            const lines = callKapalRawData.trim().split('\n').slice(1);
+            callKapalData = [];
+
+            lines.forEach(line => {
+                if (line.trim() && !line.includes('Grand Total')) {
+                    const [kade, bag, bc, cc, ck, gc, gc_bc, total] = line.split(';');
+                    callKapalData.push({
+                        kade: kade.trim(),
+                        bag: parseInt(bag) || 0,
+                        bc: parseInt(bc) || 0,
+                        cc: parseInt(cc) || 0,
+                        ck: parseInt(ck) || 0,
+                        gc: parseInt(gc) || 0,
+                        gc_bc: parseInt(gc_bc) || 0,
+                        total: parseInt(total) || 0
+                    });
+                }
+            });
+
+            // Sort by total descending
+            callKapalData.sort((a, b) => b.total - a.total);
+
+            // Calculate summary
+            callSummary = {
+                totalCalls: callKapalData.reduce((sum, item) => sum + item.total, 0),
+                totalCC: callKapalData.reduce((sum, item) => sum + item.cc, 0),
+                totalCK: callKapalData.reduce((sum, item) => sum + item.ck, 0),
+                totalBC: callKapalData.reduce((sum, item) => sum + item.bc, 0),
+                totalGC: callKapalData.reduce((sum, item) => sum + item.gc, 0),
+                totalBAG: callKapalData.reduce((sum, item) => sum + item.bag, 0),
+                totalGC_BC: callKapalData.reduce((sum, item) => sum + item.gc_bc, 0)
+            };
+        }
+
+        function getStatus(value) {
+            if (value >= 70) return 'excellent';
+            if (value >= 50) return 'good';
+            if (value >= 30) return 'fair';
+            return 'poor';
+        }
+
+        function getStatusText(status) {
+            const statusTexts = {
+                excellent: 'Sangat Baik',
+                good: 'Baik',
+                fair: 'Cukup',
+                poor: 'Perlu Perbaikan'
+            };
+            return statusTexts[status];
+        }
+
+        // Tab functionality
+        function showTab(tabName) {
+            // Hide all tabs
+            document.querySelectorAll('.tab-content').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            
+            // Remove active class from all buttons
+            document.querySelectorAll('.tab-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+
+            // Show selected tab
+            document.getElementById(tabName).classList.add('active');
+            
+            // Add active class to clicked button
+            event.target.classList.add('active');
+        }
+
+        // Initialize call summary cards
+        function initCallSummaryCards() {
+            const callSummaryCards = document.getElementById('call-summary-cards');
+            callSummaryCards.innerHTML = `
+                <div class="summary-card">
+                    <div class="label">Total Call Kapal</div>
+                    <div class="value">${callSummary.totalCalls}</div>
+                    <div class="subtitle">Kunjungan kapal (2024)</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal CC</div>
+                    <div class="value blue">${callSummary.totalCC}</div>
+                    <div class="subtitle">Curah Cair</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal CK</div>
+                    <div class="value orange">${callSummary.totalCK}</div>
+                    <div class="subtitle">Curah Kering</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal BC</div>
+                    <div class="value green">${callSummary.totalBC}</div>
+                    <div class="subtitle">Break Cargo</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal GC</div>
+                    <div class="value purple">${callSummary.totalGC}</div>
+                    <div class="subtitle">General Cargo</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal BAG</div>
+                    <div class="value red">${callSummary.totalBAG}</div>
+                    <div class="subtitle">Bagged Cargo</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">KADE Aktif</div>
+                    <div class="value teal">${callKapalData.filter(item => item.total > 0).length}</div>
+                    <div class="subtitle">KADE beroperasi</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Rata-rata per KADE</div>
+                    <div class="value indigo">${(callSummary.totalCalls / callKapalData.filter(item => item.total > 0).length).toFixed(1)}</div>
+                    <div class="subtitle">Call kapal/KADE</div>
+                </div>
+            `;
+        }
+
+        // Initialize top call KADE list
+        function initTopCallKadeList() {
+            const topCallKadeList = document.getElementById('top-call-kade');
+            topCallKadeList.innerHTML = '';
+            
+            callKapalData.slice(0, 5).forEach((kade, index) => {
+                const rankClass = index === 0 ? 'gold' : 
+                                index === 1 ? 'silver' : 
+                                index === 2 ? 'bronze' : 'blue';
+                
+                const item = document.createElement('div');
+                item.className = 'kade-item';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="rank ${rankClass}">${index + 1}</div>
+                        <div class="kade-info">
+                            <h4>${kade.kade}</h4>
+                            <p>${kade.total} total call kapal</p>
+                        </div>
+                    </div>
+                    <div class="kade-total">
+                        <div class="value blue">${kade.cc}</div>
+                        <div class="unit">CC</div>
+                        <div class="value orange">${kade.ck}</div>
+                        <div class="unit">CK</div>
+                        <div class="value green">${kade.bc}</div>
+                        <div class="unit">BC</div>
+                        <div class="value purple">${kade.gc}</div>
+                        <div class="unit">GC</div>
+                    </div>
+                `;
+                topCallKadeList.appendChild(item);
+            });
+        }
+
+        // Initialize call table
+        function initCallTable() {
+            const tableBody = document.querySelector('#call-table tbody');
+            tableBody.innerHTML = '';
+            
+            callKapalData.forEach(kade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="font-medium">${kade.kade}</td>
+                    <td>${kade.bag || '-'}</td>
+                    <td>${kade.bc || '-'}</td>
+                    <td>${kade.cc || '-'}</td>
+                    <td>${kade.ck || '-'}</td>
+                    <td>${kade.gc || '-'}</td>
+                    <td>${kade.gc_bc || '-'}</td>
+                    <td class="font-medium">${kade.total}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize summary cards
+        function initSummaryCards() {
+            const avgBOR = Object.values(borSummary).reduce((sum, data) => sum + parseFloat(data.average), 0) / Object.keys(borSummary).length;
+            
+            const summaryCards = document.getElementById('summary-cards');
+            summaryCards.innerHTML = `
+                <div class="summary-card">
+                    <div class="label">Total Produksi</div>
+                    <div class="value">${(summary.totalProduksi / 1000).toFixed(1)}K</div>
+                    <div class="subtitle">Ton (2024)</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Curah Cair (CC)</div>
+                    <div class="value blue">${(summary.totalCC / 1000).toFixed(1)}K</div>
+                    <div class="subtitle">${summary.percentageCC}% dari total</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Curah Kering (CK)</div>
+                    <div class="value orange">${(summary.totalCK / 1000).toFixed(1)}K</div>
+                    <div class="subtitle">${summary.percentageCK}% dari total</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Rata-rata BOR</div>
+                    <div class="value indigo">${avgBOR.toFixed(1)}%</div>
+                    <div class="subtitle">Utilisasi dermaga</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal CC</div>
+                    <div class="value green">${callSummary.totalCC}</div>
+                    <div class="subtitle">Kunjungan kapal CC</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Call Kapal CK</div>
+                    <div class="value red">${callSummary.totalCK}</div>
+                    <div class="subtitle">Kunjungan kapal CK</div>
+                </div>
+                <div class="summary-card">
+                    <div class="label">Total Call Kapal</div>
+                    <div class="value purple">${callSummary.totalCalls}</div>
+                    <div class="subtitle">Total kunjungan kapal</div>
+                </div>
+            `;
+        }
+
+        // Initialize top KADE list
+        function initTopKadeList() {
+            const topKadeList = document.getElementById('top-kade');
+            topKadeList.innerHTML = '';
+            
+            kadeData.slice(0, 5).forEach((kade, index) => {
+                const rankClass = index === 0 ? 'gold' : 
+                                index === 1 ? 'silver' : 
+                                index === 2 ? 'bronze' : 'blue';
+                
+                const item = document.createElement('div');
+                item.className = 'kade-item';
+                item.innerHTML = `
+                    <div style="display: flex; align-items: center;">
+                        <div class="rank ${rankClass}">${index + 1}</div>
+                        <div class="kade-info">
+                            <h4>${kade.kade}</h4>
+                            <p>${((kade.cc_total + kade.ck_total) / 1000).toFixed(1)}K ton</p>
+                        </div>
+                    </div>
+                    <div class="kade-total">
+                        <div class="value blue">${kade.cc_total.toLocaleString()}</div>
+                        <div class="unit">CC</div>
+                        <div class="value orange">${kade.ck_total.toLocaleString()}</div>
+                        <div class="unit">CK</div>
+                    </div>
+                `;
+                topKadeList.appendChild(item);
+            });
+        }
+
+        // Initialize KADE table
+        function initKadeTable() {
+            const tableBody = document.querySelector('#kade-table tbody');
+            tableBody.innerHTML = '';
+            
+            kadeData.forEach(kade => {
+                const row = document.createElement('tr');
+                row.innerHTML = `
+                    <td class="font-medium">${kade.kade}</td>
+                    <td>${kade.cc_dn.toLocaleString()}</td>
+                    <td>${kade.cc_ln.toLocaleString()}</td>
+                    <td>${kade.ck_dn.toLocaleString()}</td>
+                    <td>${kade.ck_ln.toLocaleString()}</td>
+                    <td class="font-medium">${(kade.cc_total + kade.ck_total).toLocaleString()}</td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize BOR summary
+        function initBORSummary() {
+            const borSummaryContainer = document.getElementById('bor-summary');
+            borSummaryContainer.innerHTML = '';
+            
+            Object.entries(borSummary).forEach(([dermaga, data]) => {
+                const item = document.createElement('div');
+                item.className = `bor-item ${data.status}`;
+                item.innerHTML = `
+                    <div class="bor-info">
+                        <h4>${dermaga}</h4>
+                        <p>Bulan tertinggi: ${data.max}% | Terendah: ${data.min}%</p>
+                        <span class="status-indicator status-${data.status}">${getStatusText(data.status)}</span>
+                    </div>
+                    <div class="bor-value">
+                        <div class="percentage">${data.average}%</div>
+                        <div class="unit">Rata-rata tahunan</div>
+                    </div>
+                `;
+                borSummaryContainer.appendChild(item);
+            });
+        }
+
+        // Initialize BOR table
+        function initBORTable() {
+            const tableBody = document.querySelector('#bor-table tbody');
+            tableBody.innerHTML = '';
+            
+            Object.entries(borData).forEach(([dermaga, monthlyValues]) => {
+                const row = document.createElement('tr');
+                const cells = [
+                    `<td class="font-medium">${dermaga}</td>`,
+                    ...monthlyValues.map(val => `<td>${val.toFixed(2)}%</td>`),
+                    `<td class="font-medium">${borSummary[dermaga].average}%</td>`
+                ];
+                row.innerHTML = cells.join('');
+                tableBody.appendChild(row);
+            });
+        }
+
+        // Initialize all components when page loads
+        document.addEventListener('DOMContentLoaded', function() {
+            processData();
+            initSummaryCards();
+            initTopKadeList();
+            initKadeTable();
+            initBORSummary();
+            initBORTable();
+            initCallSummaryCards();
+            initTopCallKadeList();
+            initCallTable();
+        });
+    </script>
+</body>
+</html>
